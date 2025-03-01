@@ -1,0 +1,50 @@
+<Window x:Class="WinToucher.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:WinToucher.ViewModels"
+        xmlns:material="http://materialdesigninxaml.net/winfx/xaml/themes"
+        Title="WinToucher" WindowStyle="None" AllowsTransparency="True" Background="Transparent"
+        Topmost="{Binding TopMost}">
+    <Window.DataContext>
+        <Binding Source="{StaticResource Locator}" Path="MainViewModel"/>
+    </Window.DataContext>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Drawing Canvas -->
+        <Canvas x:Name="OverlayCanvas" Grid.Row="0"
+                Visibility="{Binding IsOverlayActive, Converter={StaticResource BooleanToVisibilityConverter}}"
+                MouseDown="OverlayCanvas_MouseDown" MouseMove="OverlayCanvas_MouseMove" MouseUp="OverlayCanvas_MouseUp">
+            <ItemsControl ItemsSource="{Binding TouchPaths}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <Canvas />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Polyline Points="{Binding Points, Converter={StaticResource PointCollectionConverter}}"
+                          Stroke="{Binding PointerId, Converter={StaticResource PointerColorConverter}}"
+                          StrokeThickness="5"/>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </Canvas>
+
+        <!-- Control Panel (Single Row at Bottom) -->
+        <Border Grid.Row="1" Margin="5">
+            <StackPanel Orientation="Horizontal" Margin="10">
+                <Button Content="TOGGLE OVERLAY" Width="200" Command="{Binding ToggleOverlayCommand}"/>
+                <Button Content="CLEAR" Width="120" Margin="10,0,0,0" Command="{Binding ClearPathsCommand}"/>
+                <Button Content="EXECUTE" Width="120" Margin="10,0,0,0" Command="{Binding ExecutePathsCommand}"/>
+
+                <Button Content="EXIT" Width="120" Command="{Binding ExitCommand}" Margin="10,0,0,0"/>
+
+                <TextBlock Text="{Binding Message}" Foreground="Red" VerticalAlignment="Center" Margin="10,0,0,0"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</Window>
